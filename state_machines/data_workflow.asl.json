@@ -1,0 +1,34 @@
+{
+    "Comment": "Data Collection Workflow for RAG System",
+    "StartAt": "ParseData",
+    "States": {
+      "ParseData": {
+        "Type": "Task",
+        "Resource": "${ParseLambdaArn}",
+        "Parameters": {
+          "dataBucket.$": "$.dataBucket",
+          "inputKey.$": "$.inputKey"
+        },
+        "Next": "CleanData"
+      },
+      "CleanData": {
+        "Type": "Task",
+        "Resource": "${CleanLambdaArn}",
+        "Next": "NormalizeData"
+      },
+      "NormalizeData": {
+        "Type": "Task",
+        "Resource": "${NormalizeLambdaArn}",
+        "Next": "LoadData"
+      },
+      "LoadData": {
+        "Type": "Task",
+        "Resource": "${LoadDataLambdaArn}",
+        "Parameters": {
+          "dataBucket.$": "$.dataBucket",
+          "outputKeyPrefix": "processed/"
+        },
+        "End": true
+      }
+    }
+  }  
