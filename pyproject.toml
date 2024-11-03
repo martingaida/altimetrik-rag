@@ -12,10 +12,20 @@ loguru = "^0.7.2"
 poethepoet = "0.29.0"
 pandas = "^2.0.0"
 pymongo = "^4.6.1"
-qdrant-client = "^1.7.0"
+qdrant-client = {extras = ["fastembed"], version = "^1.12.1"}
 requests = "^2.31.0"
 chardet = "^5.2.0"
 pymupdf = "^1.24.13"
+openai = "^1.53.0"
+fastapi = "^0.115.4"
+sentence-transformers = "^3.2.1"
+transformers = "^4.46.1"
+torch = "^2.5.1"
+langchain-openai = "^0.2.5"
+sagemaker = "^2.232.3"
+kubernetes = "^31.0.0"
+aws-profile-manager = "^0.7.3"
+s3fs = "2024.2.0"
 
 [tool.poe.tasks]
 local-infrastructure-up = [

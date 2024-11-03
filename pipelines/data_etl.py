@@ -12,7 +12,8 @@ def data_etl_pipeline(
     collection_name: str,
     mongodb_connection_string: str
 ) -> None:
-    """Pipeline to download zip file, extract contents, transform, and store in MongoDB."""
+    """Pipeline to download zip file, extract contents, transform, and store in a NoSQL DB."""
+    
     # Extract data from zip file
     raw_documents = extract_data(zip_url=zip_url)
     

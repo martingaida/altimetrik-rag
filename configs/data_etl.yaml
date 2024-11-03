@@ -5,7 +5,7 @@ settings:
 
 parameters:
   zip_url: "$ZIP_URL"
-  collection_name: "digital_data"
+  collection_name: "$VECTOR_COLLECTION_NAME"
   mongodb_connection_string: "$MONGODB_CONNECTION_STRING"
   qdrant_host: "$QDRANT_HOST"
   qdrant_port: "$QDRANT_PORT"
