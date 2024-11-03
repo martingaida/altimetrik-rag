@@ -1,0 +1,11 @@
+settings:
+  docker:
+    parent_image: python:3.11-slim
+    skip_build: False
+
+parameters:
+  zip_url: "$ZIP_URL"
+  collection_name: "digital_data"
+  mongodb_connection_string: "$MONGODB_CONNECTION_STRING"
+  qdrant_host: "$QDRANT_HOST"
+  qdrant_port: "$QDRANT_PORT"
