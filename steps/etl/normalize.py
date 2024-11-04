@@ -19,8 +19,37 @@ class TranscriptNormalizer:
     @staticmethod
     def normalize_numbers(text: str) -> str:
         """Standardize common financial expressions like 'million' or 'billion'."""
-        text = re.sub(r'\b(\d+)\s?million\b', r'\1,000,000', text, flags=re.IGNORECASE)
-        text = re.sub(r'\b(\d+)\s?billion\b', r'\1,000,000,000', text, flags=re.IGNORECASE)
+        # Skip if the text contains currency symbols to avoid double processing
+        if '$' in text:
+            return text
+            
+        # Handle decimal numbers with million/billion
+        text = re.sub(
+            r'\b(\d+)\.(\d+)\s*million\b',
+            lambda m: f'{float(f"{m.group(1)}.{m.group(2)}") * 1000000:,.0f}',
+            text,
+            flags=re.IGNORECASE
+        )
+        text = re.sub(
+            r'\b(\d+)\.(\d+)\s*billion\b',
+            lambda m: f'{float(f"{m.group(1)}.{m.group(2)}") * 1000000000:,.0f}',
+            text,
+            flags=re.IGNORECASE
+        )
+        
+        # Handle whole numbers
+        text = re.sub(
+            r'\b(\d+)\s*million\b',
+            lambda m: f'{int(m.group(1)) * 1000000:,d}',
+            text,
+            flags=re.IGNORECASE
+        )
+        text = re.sub(
+            r'\b(\d+)\s*billion\b',
+            lambda m: f'{int(m.group(1)) * 1000000000:,d}',
+            text,
+            flags=re.IGNORECASE
+        )
         return text
 
     @staticmethod
@@ -122,10 +151,40 @@ class TranscriptNormalizer:
 
     @staticmethod
     def normalize_currency(text: str) -> str:
-        """Standardize currency formats (e.g., $1M to 1,000,000 dollars)."""
-        text = re.sub(r'\$(\d+)K\b', r'\1,000 dollars', text, flags=re.IGNORECASE)
-        text = re.sub(r'\$(\d+)M\b', r'\1,000,000 dollars', text, flags=re.IGNORECASE)
-        text = re.sub(r'\$(\d+)B\b', r'\1,000,000,000 dollars', text, flags=re.IGNORECASE)
+        """Standardize currency formats (e.g., $1M to $1,000,000)."""
+        # Handle decimal numbers with K/M/B
+        text = re.sub(
+            r'\$(\d+)\.(\d+)[Kk]\b',
+            lambda m: f'${float(f"{m.group(1)}.{m.group(2)}") * 1000:,.0f}',
+            text
+        )
+        text = re.sub(
+            r'\$(\d+)\.(\d+)[Mm]\b',
+            lambda m: f'${float(f"{m.group(1)}.{m.group(2)}") * 1000000:,.0f}',
+            text
+        )
+        text = re.sub(
+            r'\$(\d+)\.(\d+)[Bb]\b',
+            lambda m: f'${float(f"{m.group(1)}.{m.group(2)}") * 1000000000:,.0f}',
+            text
+        )
+        
+        # Handle whole numbers with K/M/B
+        text = re.sub(
+            r'\$(\d+)[Kk]\b',
+            lambda m: f'${int(m.group(1)) * 1000:,d}',
+            text
+        )
+        text = re.sub(
+            r'\$(\d+)[Mm]\b',
+            lambda m: f'${int(m.group(1)) * 1000000:,d}',
+            text
+        )
+        text = re.sub(
+            r'\$(\d+)[Bb]\b',
+            lambda m: f'${int(m.group(1)) * 1000000000:,d}',
+            text
+        )
         return text
 
     @staticmethod
