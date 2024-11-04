@@ -174,7 +174,7 @@ uvicorn steps.inference_api:app --reload --port 8000
 
 2. In a separate terminal, start the Streamlit interface:
 ```bash
-streamlit run interface/streamlit_app.py
+streamlit run streamlit_app.py
 ```
 
 3. Access the chat interface at `http://localhost:8501`

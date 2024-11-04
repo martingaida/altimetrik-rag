@@ -86,25 +86,23 @@ class IntentDetectionTemplate(PromptTemplateFactory):
 
         Respond in JSON format:
         {{
-            "intent": "INTENT_CATEGORY",
-            "reasoning": "Brief explanation of why this intent was chosen",
+            "intent": "METADATA",
+            "reasoning": "Brief explanation",
             "mongo_query": {{
-                // Construct the MongoDB query if the intent is COMPANY_TIMEFRAME, COMPANY_TOPIC, or METADATA, else return null
+                // MongoDB query object using find() compatible operators
             }}
         }}
 
-        Example responses:
-
-        For "How many pages are in the most recent earnings call?":
+        For "Show details of the latest Salesforce earnings call document.":
         {{
             "intent": "METADATA",
-            "reasoning": "The query requests metadata on the page count for the latest earnings call document.",
+            "reasoning": "The query requests metadata for the latest earnings call document from Salesforce.",
             "mongo_query": {{
+                "metadata.company_name": "Salesforce Inc.",
                 "metadata.type": "earnings_call",
                 "metadata.ingestion_timestamp": {{
                     "$sort": -1
-                }},
-                "metadata.page_count": {{}}
+                }}
             }}
         }}
 
