@@ -1,13 +1,17 @@
 from loguru import logger
 from zenml import pipeline
+from typing import List
+
 from shared.domain.queries import LLMQuery
+from shared.domain.types import QueryIntent
+from steps.retrieval.intent_detection import IntentDetector
 from shared.preprocessing.operations.tagging import tag_chunk
+from steps.ingestion.query_data_warehouse import execute_mongo_query
 from steps.retrieval.query_expansion import QueryExpansion
 from steps.retrieval.self_query import SelfQuery
 from steps.retrieval.reranking import Reranker
 from infrastructure.db.qdrant import connection
 from shared.domain.documents import VectorSearchResult
-from typing import List
 
 def retrieval_pipeline(query: str, top_k: int = 3) -> List[VectorSearchResult]:
     """
@@ -19,6 +23,16 @@ def retrieval_pipeline(query: str, top_k: int = 3) -> List[VectorSearchResult]:
         # Convert string to LLMQuery
         if isinstance(query, str):
             query = LLMQuery.from_str(query)
+
+        # Intent detection
+        intent_detector = IntentDetector()
+        intent, action = intent_detector.detect(query)
+        logger.info(f"Detected intent: {intent} {action}")
+
+        if intent != QueryIntent.GENERAL:
+            results = execute_mongo_query(action)
+            logger.info(f"Found {len(results)} documents matching intent query: {results}")
+            return results
 
         # Tag query
         query_tags = tag_chunk(query.content)
@@ -66,7 +80,7 @@ def retrieval_pipeline(query: str, top_k: int = 3) -> List[VectorSearchResult]:
             
             results = connection.search(
                 query_text=expanded_query.content,
-                limit=10,
+                limit=5,
                 filter_condition=filter_condition
             )
 
@@ -74,7 +88,7 @@ def retrieval_pipeline(query: str, top_k: int = 3) -> List[VectorSearchResult]:
                 logger.warning(f"Filter condition returned no results. Trying without filter condition.")
                 results = connection.search(
                     query_text=expanded_query.content,
-                    limit=10,
+                    limit=5,
                     filter_condition=None
                 )
             

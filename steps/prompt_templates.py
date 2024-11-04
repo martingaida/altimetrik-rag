@@ -70,3 +70,58 @@ class SelfQueryTemplateECT(PromptTemplateFactory):
             input_variables=["question"],
             partial_variables={"today": today},
         )
+
+
+class IntentDetectionTemplate(PromptTemplateFactory):
+    def create_template(self) -> PromptTemplate:
+        """Create intent detection prompt template"""
+        # TODO COMPANY_TIMEFRAME should return document ids so that we can retrieve the documents from the vector database
+        template = """Analyze the following query and determine if it matches one of these intents:
+
+        1. METADATA: Questions about document metadata, such as page counts, document dates, types, and other details.
+
+        If the intent is METADATA, construct an appropriate MongoDB query to retrieve data.
+
+        Query: {question}
+
+        Respond in JSON format:
+        {{
+            "intent": "INTENT_CATEGORY",
+            "reasoning": "Brief explanation of why this intent was chosen",
+            "mongo_query": {{
+                // Construct the MongoDB query if the intent is COMPANY_TIMEFRAME, COMPANY_TOPIC, or METADATA, else return null
+            }}
+        }}
+
+        Example responses:
+
+        For "How many pages are in the most recent earnings call?":
+        {{
+            "intent": "METADATA",
+            "reasoning": "The query requests metadata on the page count for the latest earnings call document.",
+            "mongo_query": {{
+                "metadata.type": "earnings_call",
+                "metadata.ingestion_timestamp": {{
+                    "$sort": -1
+                }},
+                "metadata.page_count": {{}}
+            }}
+        }}
+
+        For "How many earnings call documents do you have indexed?":
+        {{
+            "intent": "METADATA",
+            "reasoning": "The query requests a count of indexed earnings call documents.",
+            "mongo_query": {{
+                "metadata.type": "earnings_call",
+                "$count": "document_count"
+            }}
+        }}
+
+        Only respond with JSON in the specified format, without additional text or explanations.
+        """
+
+        return PromptTemplate(
+            template=template,
+            input_variables=["question"]
+        )

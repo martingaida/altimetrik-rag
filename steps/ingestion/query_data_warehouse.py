@@ -1,8 +1,13 @@
-from typing import List, Dict
-from zenml import step
-from infrastructure.db.mongo import MongoDBClient
+from typing import List, Dict, Any, Optional
+from pymongo import DESCENDING
+from settings import settings
 from loguru import logger
+from zenml import step
 import os
+
+from infrastructure.db.mongo import MongoDBClient
+from shared.domain.documents import VectorSearchResult
+
 
 def fetch_all_data(collection) -> List[Dict]:
     """Fetch all documents from MongoDB collection."""
@@ -14,11 +19,68 @@ def fetch_all_data(collection) -> List[Dict]:
         logger.error(f"Error fetching documents: {e}")
         raise
 
+
+def execute_mongo_query(mongo_query: Dict[str, Any], collection_name: str = settings.MONGODB_COLLECTION_NAME, limit: int = None) -> List[VectorSearchResult]:
+    """Execute the MongoDB query generated from the IntentDetector."""
+    try:
+        mongo_client = MongoDBClient(settings.MONGODB_CONNECTION_STRING)
+        collection = mongo_client.db.get_collection(collection_name)
+
+        # Parse the query to separate filtering, sorting, and projection
+        filter_query = {}
+        sort_fields = []
+        projection = None
+
+        # Extract special operators from query
+        sort_spec = mongo_query.pop('$sort', None)
+        limit = mongo_query.pop('$limit', None)
+        projection = mongo_query.pop('projection', None)
+        
+        # Basic find query
+        cursor = collection.find(mongo_query, projection)
+        
+        # Apply sort if specified
+        if sort_spec:
+            cursor = cursor.sort(list(sort_spec.items()))
+            
+        # Apply limit if specified
+        if limit:
+            cursor = cursor.limit(limit)
+
+        # Convert results to VectorSearchResult format
+        results = []
+        for doc in cursor:
+            # Extract metadata fields
+            metadata = {}
+            if 'metadata' in doc:
+                metadata.update(doc['metadata'])
+            else:
+                # If fields are at top level, include them in metadata
+                metadata.update({
+                    k: v for k, v in doc.items()
+                    if k not in ['_id', 'content', 'metadata']
+                })
+
+            result = VectorSearchResult(
+                text=f"Database query results: {str(metadata)}",
+                metadata=metadata,
+                score=1.0
+            )
+            results.append(result)
+
+        logger.info(f"Found {len(results)} documents matching intent query")
+        return results
+
+    except Exception as e:
+        logger.error(f"Error executing MongoDB query: {e}", exc_info=True)
+        return []
+    
+
 @step
 def query_data_warehouse(collections: List[str]) -> List[Dict]:
     """Query MongoDB for documents."""
     all_documents = []
-    mongo_client = MongoDBClient(os.getenv("MONGODB_CONNECTION_STRING"))
+    mongo_client = MongoDBClient(settings.MONGODB_CONNECTION_STRING)
     
     for collection_name in collections:
         logger.info(f"Querying data warehouse for collection: {collection_name}")
