@@ -30,18 +30,19 @@ class InferenceExecutor:
         self.context = context
 
     def execute(self) -> str:
+        if not self.context:
+            return "I apologize, but I couldn't find relevant information to answer your question."
+            
         prompt = self._build_prompt()
         return self.llm.generate(prompt)
 
     def _build_prompt(self) -> str:
-        if self.context:
-            return f"""Please answer the following question based on the provided context.
-                
-    Context:
-    {self.context}
+        return f"""Based on the following context, please provide a clear and concise answer to the question. If the context doesn't contain relevant information, please indicate that.
 
-    Question:
-    {self.query}
+Context:
+{self.context}
 
-    Answer:"""
-        return f"Please answer the following question: {self.query}"
+Question:
+{self.query}
+
+Answer:"""
