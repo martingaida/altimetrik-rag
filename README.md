@@ -237,9 +237,8 @@ salesforce-rag/
 │   │   ├── reranking.py        # Result reranking
 │   │   └── self_query.py       # Self-query generation
 │   └── prompt_templates.py     # LLM prompts
-├── tests/                    # Test suite
-│   ├── run_rag.py            # RAG End-to-End test
-│   └── run_retrieval.py      # Retrieval Pipeline test
+├── tests/                      # Test suite
+│   └── run_rag.py            # RAG End-to-End test
 └── shared/
     ├── domain/                 # Domain models
     │   ├── base/
@@ -284,13 +283,4 @@ The system uses `loguru` for comprehensive logging:
    
    query = "Can you summarize Salesforce's strategy at the beginning of 2023?"
    answer = test_simple_rag(query)
-   ```
-
-2. **Retrieval Testing** (`run_retrieval.py`)
-   - Tests context retrieval functionality
-   - Example usage:
-   ```python
-   from tools.run_retrieval import test_retrieval
-   
-   test_retrieval()
    ```
