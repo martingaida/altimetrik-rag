@@ -11,7 +11,7 @@ def inference_pipeline(query: str) -> str:
         logger.info(f"Starting inference pipeline for query: {query}")
         
         # Step 1: Retrieve relevant context
-        documents = retrieve_context(query=query, k=3)
+        documents = retrieve_context(query=query, k=5)
         
         # Step 2: Prepare context
         context = prepare_context(documents=documents)
