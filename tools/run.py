@@ -4,8 +4,8 @@ from datetime import datetime as dt
 import click
 from dotenv import load_dotenv
 from zenml.client import Client
-from pipelines.data_etl import data_etl_pipeline
-from pipelines.data_ingestion import data_ingestion_pipeline
+from pipelines.etl import data_etl_pipeline
+from pipelines.ingestion import data_ingestion_pipeline
 from loguru import logger
 from settings import settings
 

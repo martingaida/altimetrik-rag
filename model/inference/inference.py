@@ -1,97 +1,47 @@
-import json
-from typing import Any, Dict, Optional
-
-from loguru import logger
-
-try:
-    import boto3
-except ModuleNotFoundError:
-    logger.warning("Couldn't load AWS or SageMaker imports. Run 'poetry install --with aws' to support AWS.")
+import openai
+from settings import settings
 
 
-from llm_engineering.domain.inference import Inference
-from llm_engineering.settings import settings
+class LLMInferenceOpenAI:
+    def __init__(self):
+        openai.api_key = settings.OPENAI_API_KEY
+        self.model = settings.OPENAI_MODEL
 
-
-class LLMInferenceSagemakerEndpoint(Inference):
-    """
-    Class for performing inference using a SageMaker endpoint for LLM schemas.
-    """
-
-    def __init__(
-        self,
-        endpoint_name: str,
-        default_payload: Optional[Dict[str, Any]] = None,
-        inference_component_name: Optional[str] = None,
-    ) -> None:
-        super().__init__()
-
-        self.client = boto3.client(
-            "sagemaker-runtime",
-            region_name=settings.AWS_REGION,
-            aws_access_key_id=settings.AWS_ACCESS_KEY,
-            aws_secret_access_key=settings.AWS_SECRET_KEY,
-        )
-        self.endpoint_name = endpoint_name
-        self.payload = default_payload if default_payload else self._default_payload()
-        self.inference_component_name = inference_component_name
-
-    def _default_payload(self) -> Dict[str, Any]:
-        """
-        Generates the default payload for the inference request.
-
-        Returns:
-            dict: The default payload.
-        """
-
-        return {
-            "inputs": "How is the weather?",
-            "parameters": {
-                "max_new_tokens": settings.MAX_NEW_TOKENS_INFERENCE,
-                "top_p": settings.TOP_P_INFERENCE,
-                "temperature": settings.TEMPERATURE_INFERENCE,
-                "return_full_text": False,
-            },
-        }
-
-    def set_payload(self, inputs: str, parameters: Optional[Dict[str, Any]] = None) -> None:
-        """
-        Sets the payload for the inference request.
-
-        Args:
-            inputs (str): The input text for the inference.
-            parameters (dict, optional): Additional parameters for the inference. Defaults to None.
-        """
-
-        self.payload["inputs"] = inputs
-        if parameters:
-            self.payload["parameters"].update(parameters)
-
-    def inference(self) -> Dict[str, Any]:
-        """
-        Performs the inference request using the SageMaker endpoint.
-
-        Returns:
-            dict: The response from the inference request.
-        Raises:
-            Exception: If an error occurs during the inference request.
-        """
-
+    def generate(self, prompt: str) -> str:
         try:
-            logger.info("Inference request sent.")
-            invoke_args = {
-                "EndpointName": self.endpoint_name,
-                "ContentType": "application/json",
-                "Body": json.dumps(self.payload),
-            }
-            if self.inference_component_name not in ["None", None]:
-                invoke_args["InferenceComponentName"] = self.inference_component_name
-            response = self.client.invoke_endpoint(**invoke_args)
-            response_body = response["Body"].read().decode("utf8")
+            response = openai.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant that answers questions based on the provided context."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.7,
+                max_tokens=1000
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            raise Exception(f"OpenAI API error: {str(e)}")
 
-            return json.loads(response_body)
 
-        except Exception:
-            logger.exception("SageMaker inference failed.")
+class InferenceExecutor:
+    def __init__(self, llm: LLMInferenceOpenAI, query: str, context: str | None):
+        self.llm = llm
+        self.query = query
+        self.context = context
 
-            raise
+    def execute(self) -> str:
+        prompt = self._build_prompt()
+        return self.llm.generate(prompt)
+
+    def _build_prompt(self) -> str:
+        if self.context:
+            return f"""Please answer the following question based on the provided context.
+                
+    Context:
+    {self.context}
+
+    Question:
+    {self.query}
+
+    Answer:"""
+        return f"Please answer the following question: {self.query}"

@@ -57,7 +57,7 @@ def chunk_and_embed(documents: List[Dict]) -> List[Dict]:
                         'text': chunk_text,
                         'embedding': embedding,
                         'metadata': {
-                            'category': metadata.get('category', 'unknown'),
+                            'category': metadata.get('type', 'unknown'),
                             'chunk_index': len(chunks),
                             'original_id': doc_id,
                             'start_char': start,

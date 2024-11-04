@@ -1,4 +1,4 @@
-from .inference import LLMInferenceSagemakerEndpoint
-from .run import InferenceExecutor
+from .inference import LLMInferenceOpenAI
+from .inference import InferenceExecutor
 
-__all__ = ["LLMInferenceSagemakerEndpoint", "InferenceExecutor"]
+__all__ = ["LLMInferenceOpenAI", "InferenceExecutor"]
