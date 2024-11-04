@@ -12,6 +12,8 @@ A Retrieval-Augmented Generation (RAG) system designed to analyze and answer que
 
 ## Architecture
 
+View the full interactive diagram [here](https://lucid.app/lucidchart/d56f70c8-b4eb-4024-90f1-db1d34fe646a/edit?viewport_loc=-978%2C-1600%2C2078%2C3320%2C0_0&invitationId=inv_37e35a31-9a66-4efc-8e93-f643c0ded101).
+
 ### Overview
 
 The system follows a modular RAG architecture with the following main components:
