@@ -1,18 +1,34 @@
-# Salesforce Earnings Call RAG System
+# Enterprise RAG System
 
-A Retrieval-Augmented Generation (RAG) system designed to analyze and answer questions about Salesforce earnings call transcripts. The system uses advanced NLP techniques, including query expansion and semantic search, to provide accurate answers from the earnings call documents.
+A modular, provider-agnostic Retrieval Augmented Generation (RAG) system designed for enterprise document analysis.
 
 ## Features
 
-- 🔍 Semantic search with query expansion
-- 💡 Context-aware answer generation
-- 🤖 Interactive chatbot interface
-- 📊 Metadata-aware document retrieval
-- 🎯 Specialized for financial earnings calls
+- 🔌 **Provider Agnostic**: 
+  - Supports multiple LLM providers (OpenAI, Anthropic, local models)
+  - Compatible with various vector databases (Qdrant, Pinecone, FAISS)
+  - Flexible storage options (MongoDB, PostgreSQL, S3)
+
+- 🔧 **Modular Architecture**:
+  - Swappable components through dependency injection
+  - Abstract interfaces for key components
+  - Pipeline-based workflow for easy customization
+
+- 📊 **Document Processing**:
+  - Extensible document handlers
+  - Configurable chunking strategies
+  - Custom embedding models support
+
+- 🚀 **Scalable Design**:
+  - Asynchronous processing capabilities
+  - Batch processing support
+  - Distributed computing ready
 
 ## Architecture
 
 View the full interactive diagram [here](https://lucid.app/lucidchart/d56f70c8-b4eb-4024-90f1-db1d34fe646a/edit?viewport_loc=-978%2C-1600%2C2078%2C3320%2C0_0&invitationId=inv_37e35a31-9a66-4efc-8e93-f643c0ded101).
+
+## Modular Components
 
 ### Overview
 
@@ -39,6 +55,23 @@ The system follows a modular RAG architecture with the following main components
    - FastAPI backend service
    - Streamlit chat interface
    - REST API endpoints
+
+## Example Use Cases
+
+1. **Financial Document Analysis**
+   - Earnings call transcripts
+   - Annual reports
+   - Financial statements
+
+2. **Legal Document Processing**
+   - Contract analysis
+   - Compliance documentation
+   - Legal case research
+
+3. **Healthcare Records**
+   - Medical transcripts
+   - Research papers
+   - Patient records
 
 ### Technical Components
 
