@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 from shared.domain.cleaned_documents import CleanedECTDocument
 from shared.domain.chunks import EarningsCallChunk
-from .operations.chunking import chunk_text
+from .operations.chunking import create_chunks
 from .operations.cleaning import clean_text
 import hashlib
 from uuid import UUID
@@ -39,7 +39,7 @@ class EarningsCallChunkingHandler(ChunkingDataHandler):
             # Clean the text first
             cleaned_content = clean_text(content)
             # Then chunk it
-            text_chunks = chunk_text(
+            text_chunks = create_chunks(
                 cleaned_content, 
                 chunk_size=self.metadata["chunk_size"], 
                 chunk_overlap=self.metadata["chunk_overlap"]

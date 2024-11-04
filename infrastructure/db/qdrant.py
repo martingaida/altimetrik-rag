@@ -67,22 +67,13 @@ class QdrantClient:
                 if 'embedding' in doc and doc['embedding']:
                     vector = doc['embedding']
                 else:
-                    # Generate embedding if not provided
-                    text = doc.get('text') or doc.get('content', '')
-                    vector = self._generate_embedding(text)
-                
-                if not vector:
                     logger.warning(f"Skipping document {idx} due to missing embedding.")
                     continue
                 
                 # Metadata extraction
                 metadata = {
-                    'category': doc['metadata']['category'],
-                    'chunk_index': doc['metadata']['chunk_index'],
-                    'original_id': doc['metadata']['original_id'],
-                    'start_char': doc['metadata']['start_char'],
-                    'end_char': doc['metadata']['end_char'],
-                    'text': doc['text'][:200]
+                    **doc['metadata'],
+                    'text': doc['text']
                 }
                 
                 # Create Qdrant PointStruct for each document

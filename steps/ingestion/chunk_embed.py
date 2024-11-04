@@ -2,6 +2,8 @@ from typing import List, Dict
 from zenml import step
 from loguru import logger
 from sentence_transformers import SentenceTransformer
+from shared.preprocessing.operations.chunking import create_chunks
+from shared.preprocessing.operations.chunk_tagging import tag_chunk
 from settings import settings
 
 @step
@@ -21,7 +23,9 @@ def chunk_and_embed(documents: List[Dict]) -> List[Dict]:
     for i, doc in enumerate(documents, 1):
         try:
             # Get document content and metadata
-            content = str(doc.get('content', ''))
+            content = doc.get('content', '')
+            presentation = str(content.get('presentation', ''))
+            qa = str(content.get('qa', ''))
             metadata = doc.get('metadata', {})
             doc_id = str(doc.get('_id', f'doc_{i}'))
             
@@ -30,47 +34,34 @@ def chunk_and_embed(documents: List[Dict]) -> List[Dict]:
             if doc_id == f'doc_{i}':
                 logger.warning(f"Using fallback ID for document {i} - original _id not found")
             
-            # Create chunks
-            start = 0
-            chunks = []
-            
-            while start < len(content):
-                end = start + chunk_size
-                chunk_text = content[start:end].strip()
-                
-                if chunk_text:
-                    # Try to find a good breaking point
-                    if end < len(content):
-                        last_period = chunk_text.rfind('.')
-                        last_newline = chunk_text.rfind('\n')
-                        break_point = max(last_period, last_newline)
-                        
-                        if break_point > chunk_size // 2:  # Only break if we're past halfway
-                            chunk_text = chunk_text[:break_point + 1]
-                            end = start + break_point + 1
+            # Process each section using chunk_text
+            for text_type, text in [("presentation", presentation), ("qa", qa)]:
+                if not text.strip():
+                    continue
                     
+                # Use chunk_text function
+                chunks = create_chunks(text, chunk_size=chunk_size, chunk_overlap=overlap)
+                
+                for chunk_index, chunk in enumerate(chunks):
                     # Create embedding
-                    embedding = model.encode(chunk_text).tolist()
+                    embedding = model.encode(chunk).tolist()
                     
                     # Create chunk document
                     chunk_doc = {
-                        'text': chunk_text,
+                        'text': chunk,
                         'embedding': embedding,
                         'metadata': {
-                            'category': metadata.get('type', 'unknown'),
-                            'chunk_index': len(chunks),
+                            **metadata,  # Spread the original document metadata
+                            'tags': tag_chunk(chunk),
+                            'chunk_index': chunk_index,
                             'original_id': doc_id,
-                            'start_char': start,
-                            'end_char': end
+                            'section': text_type,
+                            'total_chunks': len(chunks)
                         }
                     }
-                    chunks.append(chunk_doc)
+                    processed_chunks.append(chunk_doc)
                 
-                # Move start position, accounting for overlap
-                start = end - overlap
-            
-            processed_chunks.extend(chunks)
-            logger.info(f"Processed document {i}: created {len(chunks)} chunks")
+                logger.info(f"Processed {text_type} section of document {i}: created {len(chunks)} chunks")
             
         except Exception as e:
             logger.error(f"Failed to process document {i}: {e}")

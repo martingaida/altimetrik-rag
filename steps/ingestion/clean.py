@@ -27,9 +27,7 @@ def clean_documents(
                     "presentation": content["presentation"],
                     "qa": content["qa"]
                 },
-                "metadata": metadata,
-                "company_id": settings.SALESFORCE_ID,
-                "company_name": settings.SALESFORCE_NAME
+                "metadata": metadata
             })
             
             logger.info(f"Processed document: {len(content['presentation']) + len(content['qa'])} chars total")

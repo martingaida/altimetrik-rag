@@ -30,7 +30,8 @@ def query_data_warehouse(collections: List[str]) -> List[Dict]:
         
         # Add collection metadata
         for doc in documents:
-            doc["metadata"]["collection"] = collection_name
+            doc["metadata"]["collection_name"] = collection_name
+            doc["metadata"]["collection_total_docs"] = str(len(documents))
             doc['_id'] = str(doc['_id'])  # Convert ObjectId to string
             all_documents.append(doc)
     

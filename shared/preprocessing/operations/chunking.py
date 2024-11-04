@@ -2,7 +2,7 @@ from typing import List
 import re
 from loguru import logger
 
-def chunk_text(text: str, chunk_size: int = 1000, chunk_overlap: int = 100) -> List[str]:
+def create_chunks(text: str, chunk_size: int = 1000, chunk_overlap: int = 100) -> List[str]:
     """Split text into chunks with overlap using sentence boundaries."""
     # First split by paragraphs to preserve structure
     paragraphs = text.split('\n\n')
