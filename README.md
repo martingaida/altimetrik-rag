@@ -41,6 +41,11 @@ The system follows a modular RAG architecture with the following main components
    - Storage in MongoDB (raw data) and Qdrant (vector store)
 
 2. **Retrieval Pipeline**
+   - Intent Detection Layer
+     - Analyzes user queries to determine specific intents (e.g., metadata queries)
+     - Generates optimized MongoDB queries for metadata-related questions
+     - Supports direct database access for structured data retrieval
+     - Falls back to semantic search for general queries
    - Query expansion for better semantic coverage
    - Self-query mechanism for metadata extraction
    - Semantic search using Qdrant
