@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-def get_keywords() -> List[str]:
+def get_keywords_ect() -> List[str]:
     """Return list of keywords"""
     return [
         # Financial Performance
@@ -89,7 +89,7 @@ def get_keywords() -> List[str]:
 ]
 
 
-def tag_chunk(text: str, keywords: List[str]) -> List[str]:
+def tag_chunk(text: str, keywords: List[str] = get_keywords_ect()) -> List[str]:
     """Tag chunk based on keyword presence"""
     text = text.lower()
     tags = []
