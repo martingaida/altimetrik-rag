@@ -30,7 +30,7 @@ class SelfQuery(RAGStep):
             query.metadata = {"extracted_terms": metadata}
             logger.info(f"Extracted metadata: {metadata}")
             
-            return query
+            return metadata
             
         except Exception as e:
             logger.error(f"Error in self-query: {e}")

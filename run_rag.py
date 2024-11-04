@@ -40,7 +40,7 @@ def test_simple_rag(query: str):
 
 if __name__ == "__main__":
     # Test query
-    query = "Can you summarize Salesforce's strategy at the beginning of 2023?"
+    query = "How many pages are in the most recent earnings call?"
     
     try:
         answer = test_simple_rag(query)

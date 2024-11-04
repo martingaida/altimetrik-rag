@@ -1,4 +1,7 @@
+from loguru import logger
+
 from typing import List, Dict
+
 
 def get_keywords_ect() -> List[str]:
     """Return list of keywords"""
@@ -85,7 +88,8 @@ def get_keywords_ect() -> List[str]:
 
         # General and Miscellaneous Phrases
         "fiscal year", "quarterly results", "financial highlights", "key takeaways", "year-over-year comparison",
-        "YoY", "sequential growth", "year-to-date performance", "seasonality impact", "key metrics"
+        "YoY", "sequential growth", "year-to-date performance", "seasonality impact", "key metrics", "strategy",
+        "strategic initiatives", "strategic plan", "strategic direction", "strategic priorities", "strategic goals"
 ]
 
 
@@ -93,7 +97,7 @@ def tag_chunk(text: str, keywords: List[str] = get_keywords_ect()) -> List[str]:
     """Tag chunk based on keyword presence"""
     text = text.lower()
     tags = []
-    
+   
     for keyword in keywords:
         if keyword in text:
             tags.append(keyword)

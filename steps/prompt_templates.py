@@ -36,14 +36,15 @@ class QueryExpansionTemplateECT(PromptTemplateFactory):
 
 
 class SelfQueryTemplateECT(PromptTemplateFactory):
-    prompt: str = """You are an AI language model assistant. Your task is to extract key terms or metrics from the user's question.
-    Focus on identifying financial metrics, business keywords (e.g., revenue, guidance, profit), and time references (e.g., next quarter, last year).
-    If the question refers to upcoming or recent timeframes, append today's date in the format {today}.
-    Your response should consist of only the extracted terms, separated by commas. If no key terms are present, return 'none'.
+    prompt: str = """You are an AI language model assistant. Extract key financial terms, metrics, and time references from the user's question.
+    - Financial terms include metrics like revenue, earnings, guidance, profit, and other common financial indicators.
+    - Time references include specific periods like "next quarter," "last year," "this quarter." If a future or recent timeframe is mentioned, also note today’s date as {today}.
+    
+    Your response should list only the extracted terms and phrases separated by commas. If the question contains no relevant terms, respond with 'none'.
 
     Examples:
     QUESTION 1: "What is the revenue guidance for next quarter?"
-    RESPONSE 1: "revenue, guidance, next quarter as of {today}"
+    RESPONSE 1: "revenue, guidance, next quarter, {today}"
 
     QUESTION 2: "Can you summarize the key metrics from this quarter?"
     RESPONSE 2: "key metrics, this quarter"
@@ -53,6 +54,12 @@ class SelfQueryTemplateECT(PromptTemplateFactory):
 
     QUESTION 4: "Show me the company’s profit for last year."
     RESPONSE 4: "profit, last year"
+
+    QUESTION 5: "How has the company performed recently?"
+    RESPONSE 5: "performance, recent, {today}"
+
+    QUESTION 6: "What are the latest earnings figures?"
+    RESPONSE 6: "earnings, latest"
 
     User question: {question}"""
 

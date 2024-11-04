@@ -2,6 +2,7 @@ from zenml import step
 from loguru import logger
 from model.inference.inference import LLMInferenceOpenAI, InferenceExecutor
 
+
 @step
 def generate_answer(query: str, context: str) -> str:
     """Generate answer using LLM based on retrieved context"""

@@ -1,9 +1,9 @@
 from langchain_openai import ChatOpenAI
 from loguru import logger
+from zenml import step
 
 from shared.domain.queries import LLMQuery
 from settings import settings
-
 from steps.base import RAGStep
 from steps.prompt_templates import QueryExpansionTemplateECT
 
@@ -16,7 +16,7 @@ class QueryExpansion(RAGStep):
             return [query for _ in range(expand_to_n)]
 
         query_expansion_template = QueryExpansionTemplateECT()
-        prompt = query_expansion_template.create_template(expand_to_n - 1)
+        prompt = query_expansion_template.create_template(expand_to_n)
         model = ChatOpenAI(model=settings.OPENAI_MODEL, api_key=settings.OPENAI_API_KEY, temperature=0)
 
         chain = prompt | model

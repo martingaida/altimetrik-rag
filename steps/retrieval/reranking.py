@@ -1,6 +1,7 @@
 from loguru import logger
-import numpy as np
+from zenml import step
 from sentence_transformers import SentenceTransformer, util
+
 from settings import settings
 from shared.domain.queries import LLMQuery, VectorQuery
 from shared.domain.documents import VectorSearchResult

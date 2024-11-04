@@ -2,7 +2,7 @@ from qdrant_client import QdrantClient as QClient
 from qdrant_client.models import Distance, VectorParams, PointStruct, Filter
 from loguru import logger
 from settings import settings
-from typing import List, Dict
+from typing import List, Dict, Optional
 from sentence_transformers import SentenceTransformer
 
 
@@ -98,35 +98,56 @@ class QdrantClient:
             logger.error(f"Failed to add documents: {e}")
             raise
 
-    def search_similar(self, query_vector: list[float] = None, query_text: str = None, 
-                      collection_name: str = settings.VECTOR_COLLECTION_NAME, 
-                      limit: int = 5, filter: Filter = None):
-        """Search for similar documents using either a vector or text query."""
+    def search(
+        self, 
+        query_text: Optional[str] = None, 
+        limit: int = 3,
+        filter_condition: Optional[dict] = None,
+        query_vector: Optional[list[float]] = None,
+        collection_name: str = settings.VECTOR_COLLECTION_NAME
+    ) -> List[Dict]:
+        """Search for similar documents with optional filtering."""
         try:
             if query_vector is None and query_text is not None:
                 # Generate embedding for the query text using SentenceTransformer
                 model = SentenceTransformer(settings.EMBEDDING_MODEL_NAME)
                 query_vector = model.encode(query_text).tolist()
-            elif query_vector is None and query_text is None:
+            
+            if query_vector is None and not query_text is None:
                 raise ValueError("Either query_vector or query_text must be provided")
             
-            logger.debug(f"Searching collection {collection_name} with limit {limit}")
-            if filter:
-                logger.debug(f"Using filter: {filter}")
-                
-            results = self.client.search(
+            # Perform search with optional filter
+            search_results = self.client.search(
                 collection_name=collection_name,
                 query_vector=query_vector,
                 limit=limit,
-                query_filter=filter
+                query_filter=filter_condition
             )
+            logger.info(f"Found {len(search_results)} results for query")
+
+            # Transform ScoredPoint objects to dictionaries
+            results = []
+            for point in search_results:
+                # Ensure that each part of the payload and score is accessed safely
+                payload = getattr(point, 'payload', {})
+                score = getattr(point, 'score', None)
+                text_content = payload.get("text", "")
+
+                # Append transformed result if payload has text content
+                results.append({
+                    "content": text_content,
+                    "metadata": {
+                        k: v for k, v in payload.items() if k != "text"
+                    },
+                    "score": score
+                })
             
-            logger.debug(f"Found {len(results)} results")
+            logger.info(f"Transformed {len(results)} results for query")
             return results
             
         except Exception as e:
-            logger.error(f"Failed to search documents: {str(e)}")
-            return []
+            logger.error(f"Search failed: {e}")
+            raise
 
 
 connection = QdrantClient()
