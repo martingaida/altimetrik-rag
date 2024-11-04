@@ -11,7 +11,7 @@ def get_keywords() -> List[str]:
         "OPEX", "cost of goods sold", "COGS", "net margin", "gross profit margin", "cost structure",
 
         # Future Outlook and Guidance
-        "guidance", "financial guidance", "revenue guidance", "earnings guidance", "margin guidance",
+        "guidance", "financial guidance", "earnings guidance", "margin guidance",
         "financial outlook", "future outlook", "next quarter forecast", "fiscal year forecast",
         "long-term outlook", "growth forecast", "expected growth", "projected revenue",
         "projected growth", "full-year forecast", "long-term targets", "guidance range",
@@ -46,6 +46,12 @@ def get_keywords() -> List[str]:
         "return on capital", "capital allocation", "debt reduction", "leverage ratio", "balance sheet",
         "cash reserves", "cash position", "working capital", "liquidity", "financial flexibility",
 
+        # Financial Reporting and Accounting
+        "financial reporting", "accounting standards", "GAAP", "non-GAAP", "IFRS", "SEC filings", "10-K", "10-Q",
+        "audited financials", "audit report", "financial audit", "financial statements", "financial analysis",
+        "audit", "amortization", "depreciation", "accrual accounting", "EBITDA adjustment", "tax provisions",
+        "reconciliations"
+
         # Shareholder Returns
         "dividend", "dividend payout", "dividend yield", "stock repurchase", "share buyback",
         "total shareholder return", "TSR", "capital return to shareholders", "stock performance",
@@ -65,7 +71,8 @@ def get_keywords() -> List[str]:
         # Corporate Governance and Leadership
         "leadership changes", "board of directors", "CEO commentary", "CFO commentary",
         "COO commentary", "management priorities", "corporate governance", "corporate responsibility",
-        "executive transition", "organizational structure",
+        "executive transition", "organizational structure", "CEO", "CFO", "COO", "CRO", "CMO", "CTO", "CIO",
+        "chairman", "chairperson", "chairwoman",
 
         # Sustainability and Corporate Responsibility
         "environmental impact", "sustainability goals", "corporate social responsibility", "CSR",
