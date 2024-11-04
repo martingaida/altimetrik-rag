@@ -79,6 +79,7 @@ class IntentDetectionTemplate(PromptTemplateFactory):
         template = """Analyze the following query and determine if it matches one of these intents:
 
         1. METADATA: Questions about document metadata, such as page counts, document dates, types, and other details.
+        2. CONTENT: Questions about the actual content of documents (e.g., risks, strategies, performance)
 
         If the intent is METADATA, construct an appropriate MongoDB query to retrieve data.
 
@@ -86,11 +87,9 @@ class IntentDetectionTemplate(PromptTemplateFactory):
 
         Respond in JSON format:
         {{
-            "intent": "METADATA",
+            "intent": "CONTENT",
             "reasoning": "Brief explanation",
-            "mongo_query": {{
-                // MongoDB query object using find() compatible operators
-            }}
+            "mongo_query": "none"
         }}
 
         For "Show details of the latest Salesforce earnings call document.":
@@ -114,6 +113,13 @@ class IntentDetectionTemplate(PromptTemplateFactory):
                 "metadata.type": "earnings_call",
                 "$count": "document_count"
             }}
+        }}
+
+        For "What are the risks that Salesforce has faced?":
+        {{
+            "intent": "CONTENT",
+            "reasoning": "Query asks about substantive content regarding risks",
+            "mongo_query": "none"
         }}
 
         Only respond with JSON in the specified format, without additional text or explanations.

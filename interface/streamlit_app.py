@@ -42,7 +42,6 @@ for message in st.session_state.messages:
 # Add some example questions in the sidebar
 st.sidebar.title("Example Questions")
 example_questions = [
-    "When was the most recent earnings call?",
     "What are the risks that Salesforce has faced?",
     "Can you summarize Salesforce's strategy at the beginning of 2023?",
     "How many earnings call documents do you have indexed?",

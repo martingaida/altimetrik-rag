@@ -31,7 +31,7 @@ def retrieval_pipeline(query: str, top_k: int = 3) -> List[VectorSearchResult]:
 
         if intent != QueryIntent.GENERAL:
             results = execute_mongo_query(action)
-            logger.info(f"Found {len(results)} documents matching intent query: {results}")
+            logger.info(f"Found {len(results)} documents matching intent query")
             return results
 
         # Tag query
