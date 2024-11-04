@@ -1,10 +1,8 @@
 from typing import List, Dict
+from settings import settings
 from zenml import step
 from uuid import UUID
 from loguru import logger
-
-SALESFORCE_ID = UUID('12345678-1234-5678-1234-567812345678')
-SALESFORCE_NAME = "Salesforce Inc."
 
 @step
 def clean_documents(
@@ -30,8 +28,8 @@ def clean_documents(
                     "qa": content["qa"]
                 },
                 "metadata": metadata,
-                "company_id": SALESFORCE_ID,
-                "company_name": SALESFORCE_NAME
+                "company_id": settings.SALESFORCE_ID,
+                "company_name": settings.SALESFORCE_NAME
             })
             
             logger.info(f"Processed document: {len(content['presentation']) + len(content['qa'])} chars total")

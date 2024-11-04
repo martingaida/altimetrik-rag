@@ -1,4 +1,6 @@
 from typing import List, Dict, Any
+from settings import settings
+from shared.preprocessing.operations.cleaning import parse_pdf_date
 from zenml import step
 from loguru import logger
 
@@ -13,7 +15,13 @@ def transform_transcript(
         content = doc.get("content", {})
         metadata = doc.get("metadata", {})
         pages = doc.get("pages", [])
-        
+        source = doc.get("source", "")
+        creation_date = parse_pdf_date(metadata.get("creation_date", "")) or ""
+        modification_date = parse_pdf_date(metadata.get("modification_date", "")) or ""
+
+        if "/" in source:
+            source = source.split("/")[-1]
+
         # Create transformed document
         transformed_doc = {
             "content": {
@@ -22,16 +30,19 @@ def transform_transcript(
                 "pages": [{"page": p["page"], "text": p["text"]} for p in pages]
             },
             "metadata": {
-                "source": doc.get("source", ""),
+                "source": source,
                 "type": "earnings_call",
+                "document_type": "transcript",
+                "company_id": settings.SALESFORCE_ID,
+                "company_name": settings.SALESFORCE_NAME,
                 "page_count": metadata.get("page_count", 0),
                 "original_length": metadata.get("original_length", 0),
                 "cleaned_length": metadata.get("cleaned_length", 0),
                 "normalized_length": metadata.get("normalized_length", 0),
-                "pdf_title": metadata.get("pdf_title", ""),
-                "pdf_author": metadata.get("pdf_author", ""),
-                "pdf_creation_date": metadata.get("pdf_creation_date", ""),
-                "pdf_modification_date": metadata.get("pdf_modification_date", "")
+                "pdf_title": doc.get("title", ""),
+                "pdf_author": metadata.get("author", ""),
+                "pdf_creation_date": creation_date,
+                "pdf_modification_date": modification_date
             }
         }
         

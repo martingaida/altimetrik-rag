@@ -1,7 +1,7 @@
-from typing import List, Dict
-from zenml import step
 from infrastructure.db.mongo import MongoDBClient
+from typing import List, Dict
 from datetime import datetime
+from zenml import step
 from loguru import logger
 
 @step
@@ -26,8 +26,6 @@ def load_data(
                 **doc.get("metadata", {}),
                 "ingestion_timestamp": timestamp,
                 "last_updated": timestamp,
-                "source_type": "earnings_call",
-                "document_type": "transcript"
             }
         }
         processed_docs.append(processed_doc)

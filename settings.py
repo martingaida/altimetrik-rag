@@ -1,7 +1,8 @@
 from pydantic_settings import BaseSettings
 from functools import lru_cache
-import os
+from uuid import UUID
 from dotenv import load_dotenv
+import os
 
 # Load .env file
 load_dotenv()
@@ -25,6 +26,10 @@ class Settings(BaseSettings):
     # Vector Embedding Settings
     EMBEDDING_MODEL_NAME: str = os.getenv("EMBEDDING_MODEL_NAME", "all-MiniLM-L6-v2")
     EMBEDDING_DIMENSION: int = int(os.getenv("EMBEDDING_DIMENSION", "384"))
+
+    # Salesforce ID and Name
+    SALESFORCE_ID: str = '82365789-5342-3256-8071-655843261987'
+    SALESFORCE_NAME: str = "Salesforce Inc."
 
     
     class Config:
